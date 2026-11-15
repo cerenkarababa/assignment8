@@ -6,11 +6,11 @@ import { fileURLToPath } from 'node:url';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Get the current file's directory
+// Get the current directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// All programme data is stored here
+// Course information
 const courses = [
   {
     id: 1,
@@ -36,9 +36,7 @@ let requestsServed = 0;
 const requestLogger = (req, res, next) => {
   const timestamp = new Date().toISOString();
 
-  console.log(
-    `[${timestamp}] ${req.method} ${req.originalUrl}`
-  );
+  console.log(`[${timestamp}] ${req.method} ${req.originalUrl}`);
 
   next();
 };
@@ -62,29 +60,27 @@ app.get('/', (req, res) => {
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// GET /hello - Plain text response
+// GET /hello
 app.get('/hello', (req, res) => {
-  res.type('text').send("Hello from Ceren's server");
+  res.type('text/plain').send("Hello from Ceren's server");
 });
 
-// GET /robots.txt - Plain text response
+// GET /robots.txt
 app.get('/robots.txt', (req, res) => {
-  res.type('text/plain').send(
-    'User-agent: *\nDisallow:'
-  );
+  res.type('text/plain').send('User-agent: *\nDisallow:');
 });
 
-// GET /old-page - Redirect
+// GET /old-page
 app.get('/old-page', (req, res) => {
   res.redirect('/hello');
 });
 
-// GET /api/courses - Return course information
+// GET /api/courses
 app.get('/api/courses', (req, res) => {
   res.json(courses);
 });
 
-// GET /api/status - Server status
+// GET /api/status
 app.get('/api/status', (req, res) => {
   res.json({
     status: 'running',
@@ -93,7 +89,7 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-// GET /api/headers - Request headers
+// GET /api/headers
 app.get('/api/headers', (req, res) => {
   res.json({
     userAgent: req.get('User-Agent') || null,
@@ -101,28 +97,28 @@ app.get('/api/headers', (req, res) => {
   });
 });
 
-// POST /api/subscribe - Subscribe
+// POST /api/subscribe
 app.post('/api/subscribe', (req, res) => {
   res.status(201).json({
     subscribed: true
   });
 });
 
-// GET /api/admin - Forbidden response
+// GET /api/admin
 app.get('/api/admin', (req, res) => {
   res.status(403).json({
     error: 'Forbidden'
   });
 });
 
-// GET /api/stats - Request statistics
+// GET /api/stats
 app.get('/api/stats', (req, res) => {
   res.json({
     requestsServed
   });
 });
 
-// 404 Fallback - Must be the last route
+// 404 Fallback - Must be last
 app.use((req, res) => {
   if (req.path.startsWith('/api')) {
     res.status(404).json({
@@ -131,7 +127,7 @@ app.use((req, res) => {
     return;
   }
 
-  res.status(404).type('text').send('Page not found');
+  res.status(404).type('text/plain').send('Page not found');
 });
 
 // Start server
