@@ -1,0 +1,14 @@
+{
+  "name": "assignment8",
+  "version": "1.0.0",
+  "description": "Web Programming Assignment 8 - Node.js and Express information server",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
