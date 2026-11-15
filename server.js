@@ -1,3 +1,4 @@
+
 import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -5,59 +6,85 @@ import { fileURLToPath } from 'node:url';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Resolve the public folder relative to this file, not the terminal's folder.
+// Get the current file's directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// All assignment data is kept in this file.
+// All programme data is stored here
 const courses = [
-  { id: 1, title: 'Introduction to Programming', credits: 5 },
-  { id: 2, title: 'Web Programming', credits: 4 },
-  { id: 3, title: 'Database Management Systems', credits: 5 }
+  {
+    id: 1,
+    title: 'Introduction to Programming',
+    credits: 5
+  },
+  {
+    id: 2,
+    title: 'Web Programming',
+    credits: 4
+  },
+  {
+    id: 3,
+    title: 'Database Management Systems',
+    credits: 5
+  }
 ];
 
+// Request counter
 let requestsServed = 0;
 
-// Middleware 1: log every incoming request.
+// Middleware 1: Request Logger
 const requestLogger = (req, res, next) => {
   const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}] ${req.method} ${req.originalUrl}`);
+
+  console.log(
+    `[${timestamp}] ${req.method} ${req.originalUrl}`
+  );
+
   next();
 };
 
-// Middleware 2: count every incoming request, including static files and 404s.
+// Middleware 2: Request Counter
 const requestCounter = (req, res, next) => {
-  requestsServed += 1;
+  requestsServed++;
+
   next();
 };
 
-// Middleware must be registered before routes so every request is logged and counted.
+// Register middleware before routes
 app.use(requestLogger);
 app.use(requestCounter);
 
-// Serve browser files from the public directory.
-app.use(express.static(path.join(__dirname, 'public')));
-
+// GET / - Homepage
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
+
+// GET /hello - Plain text response
 app.get('/hello', (req, res) => {
   res.type('text').send("Hello from Ceren's server");
 });
 
+// GET /robots.txt - Plain text response
 app.get('/robots.txt', (req, res) => {
-  res.type('text/plain').send('User-agent: *\nDisallow:');
+  res.type('text/plain').send(
+    'User-agent: *\nDisallow:'
+  );
 });
 
+// GET /old-page - Redirect
 app.get('/old-page', (req, res) => {
   res.redirect('/hello');
 });
 
+// GET /api/courses - Return course information
 app.get('/api/courses', (req, res) => {
   res.json(courses);
 });
 
+// GET /api/status - Server status
 app.get('/api/status', (req, res) => {
   res.json({
     status: 'running',
@@ -66,6 +93,7 @@ app.get('/api/status', (req, res) => {
   });
 });
 
+// GET /api/headers - Request headers
 app.get('/api/headers', (req, res) => {
   res.json({
     userAgent: req.get('User-Agent') || null,
@@ -73,28 +101,42 @@ app.get('/api/headers', (req, res) => {
   });
 });
 
+// POST /api/subscribe - Subscribe
 app.post('/api/subscribe', (req, res) => {
-  res.status(201).json({ subscribed: true });
+  res.status(201).json({
+    subscribed: true
+  });
 });
 
+// GET /api/admin - Forbidden response
 app.get('/api/admin', (req, res) => {
-  res.status(403).json({ error: 'Forbidden' });
+  res.status(403).json({
+    error: 'Forbidden'
+  });
 });
 
+// GET /api/stats - Request statistics
 app.get('/api/stats', (req, res) => {
-  res.json({ requestsServed });
+  res.json({
+    requestsServed
+  });
 });
 
-// Express 5-compatible 404 fallback. Keep it after all real routes.
+// 404 Fallback - Must be the last route
 app.use((req, res) => {
   if (req.path.startsWith('/api')) {
-    res.status(404).json({ error: 'Not found' });
+    res.status(404).json({
+      error: 'Not found'
+    });
     return;
   }
 
   res.status(404).type('text').send('Page not found');
 });
 
+// Start server
 app.listen(PORT, () => {
-  console.log(`Ceren's study programme server is running at http://localhost:${PORT}`);
+  console.log(
+    `Ceren's study programme server is running at http://localhost:${PORT}`
+  );
 });
