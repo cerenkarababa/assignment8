@@ -60,9 +60,24 @@ app.get('/old-page', (req, res) => {
   res.redirect('/hello');
 });
 
-// Courses
+// Get all courses
 app.get('/api/courses', (req, res) => {
   res.json(courses);
+});
+
+// Get a single course by ID
+app.get('/api/courses/:id', (req, res) => {
+  const courseId = Number(req.params.id);
+
+  const course = courses.find((item) => item.id === courseId);
+
+  if (!course) {
+    return res.status(404).json({
+      error: 'Course not found'
+    });
+  }
+
+  res.json(course);
 });
 
 // Status
