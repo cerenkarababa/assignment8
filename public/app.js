@@ -22,7 +22,11 @@ async function loadCourses() {
     }
 
     availableCourses = await response.json();
-    courseSearchMessage.textContent = 'Start typing to search available courses.';
+    courseSearchMessage.textContent =
+      'Start typing to search available courses.';
+
+    // Refresh search after courses are loaded
+    searchCourses();
 
   } catch (error) {
     courseSearchMessage.textContent = error.message;
@@ -64,9 +68,38 @@ function searchCourses() {
     details.textContent =
       `Course ID: ${course.id} · Credits: ${course.credits}`;
 
-    card.append(title, details);
+    // Create View Details button
+    const detailsButton = document.createElement('button');
+    detailsButton.type = 'button';
+    detailsButton.textContent = 'View Details';
+    detailsButton.addEventListener('click', () => {
+      loadCourseDetails(course.id);
+    });
+
+    card.append(title, details, detailsButton);
     courseResults.appendChild(card);
   });
+}
+
+// Load details of a single course
+async function loadCourseDetails(courseId) {
+  courseSearchMessage.textContent = 'Loading course details...';
+
+  try {
+    const response = await fetch(`/api/courses/${courseId}`);
+
+    if (!response.ok) {
+      throw new Error('Could not load course details.');
+    }
+
+    const course = await response.json();
+
+    courseSearchMessage.textContent =
+      `Course: ${course.title} | ID: ${course.id} | Credits: ${course.credits}`;
+
+  } catch (error) {
+    courseSearchMessage.textContent = error.message;
+  }
 }
 
 // Load courses when the page opens
