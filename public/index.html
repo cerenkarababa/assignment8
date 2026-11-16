@@ -21,6 +21,29 @@
       </p>
     </header>
 
+    <section class="panel" aria-labelledby="course-search-heading">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">EXPLORE COURSES</p>
+          <h2 id="course-search-heading">Find a course</h2>
+        </div>
+      </div>
+
+      <label for="course-search">Search by course name</label>
+      <input
+        type="search"
+        id="course-search"
+        placeholder="Try Introduction, Web, Database..."
+        autocomplete="off"
+      >
+
+      <p id="course-search-message" class="search-message">
+        Start typing to search available courses.
+      </p>
+
+      <div id="course-results" class="course-results" aria-live="polite"></div>
+    </section>
+
     <section class="panel" aria-labelledby="api-heading">
       <div class="section-heading">
         <div>
