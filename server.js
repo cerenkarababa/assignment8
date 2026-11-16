@@ -34,6 +34,9 @@ const requestCounter = (req, res, next) => {
 app.use(requestLogger);
 app.use(requestCounter);
 
+// Parse incoming JSON request bodies
+app.use(express.json());
+
 // Homepage
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -79,9 +82,29 @@ app.get('/api/headers', (req, res) => {
   });
 });
 
-// Subscribe
+// Subscribe with email validation
 app.post('/api/subscribe', (req, res) => {
-  res.status(201).json({ subscribed: true });
+  const email = req.body?.email;
+
+  if (typeof email !== 'string' || email.trim() === '') {
+    return res.status(400).json({
+      error: 'Email address is required.'
+    });
+  }
+
+  const normalizedEmail = email.trim();
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailPattern.test(normalizedEmail)) {
+    return res.status(400).json({
+      error: 'Please provide a valid email address.'
+    });
+  }
+
+  res.status(201).json({
+    subscribed: true,
+    email: normalizedEmail
+  });
 });
 
 // Admin
