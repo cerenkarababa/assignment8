@@ -6,45 +6,27 @@ import { fileURLToPath } from 'node:url';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Get the current directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Course information
 const courses = [
-  {
-    id: 1,
-    title: 'Introduction to Programming',
-    credits: 5
-  },
-  {
-    id: 2,
-    title: 'Web Programming',
-    credits: 4
-  },
-  {
-    id: 3,
-    title: 'Database Management Systems',
-    credits: 5
-  }
+  { id: 1, title: 'Introduction to Programming', credits: 5 },
+  { id: 2, title: 'Web Programming', credits: 4 },
+  { id: 3, title: 'Database Management Systems', credits: 5 }
 ];
 
-// Request counter
 let requestsServed = 0;
 
-// Middleware 1: Request Logger
+// Request Logger Middleware
 const requestLogger = (req, res, next) => {
   const timestamp = new Date().toISOString();
-
   console.log(`[${timestamp}] ${req.method} ${req.originalUrl}`);
-
   next();
 };
 
-// Middleware 2: Request Counter
+// Request Counter Middleware
 const requestCounter = (req, res, next) => {
   requestsServed++;
-
   next();
 };
 
@@ -52,35 +34,35 @@ const requestCounter = (req, res, next) => {
 app.use(requestLogger);
 app.use(requestCounter);
 
-// GET / - Homepage
+// Homepage
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Serve static files
+// Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// GET /hello
+// Hello
 app.get('/hello', (req, res) => {
   res.type('text/plain').send("Hello from Ceren's server");
 });
 
-// GET /robots.txt
+// Robots
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain').send('User-agent: *\nDisallow:');
 });
 
-// GET /old-page
+// Redirect
 app.get('/old-page', (req, res) => {
   res.redirect('/hello');
 });
 
-// GET /api/courses
+// Courses
 app.get('/api/courses', (req, res) => {
   res.json(courses);
 });
 
-// GET /api/status
+// Status
 app.get('/api/status', (req, res) => {
   res.json({
     status: 'running',
@@ -89,7 +71,7 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-// GET /api/headers
+// Headers
 app.get('/api/headers', (req, res) => {
   res.json({
     userAgent: req.get('User-Agent') || null,
@@ -97,33 +79,25 @@ app.get('/api/headers', (req, res) => {
   });
 });
 
-// POST /api/subscribe
+// Subscribe
 app.post('/api/subscribe', (req, res) => {
-  res.status(201).json({
-    subscribed: true
-  });
+  res.status(201).json({ subscribed: true });
 });
 
-// GET /api/admin
+// Admin
 app.get('/api/admin', (req, res) => {
-  res.status(403).json({
-    error: 'Forbidden'
-  });
+  res.status(403).json({ error: 'Forbidden' });
 });
 
-// GET /api/stats
+// Stats
 app.get('/api/stats', (req, res) => {
-  res.json({
-    requestsServed
-  });
+  res.json({ requestsServed });
 });
 
-// 404 Fallback - Must be last
+// 404 Fallback - Always last
 app.use((req, res) => {
   if (req.path.startsWith('/api')) {
-    res.status(404).json({
-      error: 'Not found'
-    });
+    res.status(404).json({ error: 'Not found' });
     return;
   }
 
