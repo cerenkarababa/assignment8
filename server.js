@@ -132,7 +132,7 @@ app.get('/api/stats', (req, res) => {
   res.json({ requestsServed });
 });
 
-// 404 Fallback - Always last
+// 404 Fallback - Always last among normal routes
 app.use((req, res) => {
   if (req.path.startsWith('/api')) {
     res.status(404).json({ error: 'Not found' });
@@ -140,6 +140,23 @@ app.use((req, res) => {
   }
 
   res.status(404).type('text/plain').send('Page not found');
+});
+
+// Central Error-Handling Middleware
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  const statusCode = err.status || err.statusCode || 500;
+
+  res.status(statusCode).json({
+    error: statusCode >= 500
+      ? 'Internal Server Error'
+      : err.message
+  });
 });
 
 // Start server
